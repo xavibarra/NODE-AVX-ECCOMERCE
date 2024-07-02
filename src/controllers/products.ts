@@ -38,3 +38,9 @@ exports.update = function (req: Request, res: Response) {
   const updatedProduct = req.body;
   return Service.update(id, updatedProduct, res);
 };
+
+// Función para buscar productos por nombre.
+exports.searchByName = function (req: Request, res: Response) {
+  const name = req.params.name; // Extraer el parámetro de nombre de la ruta.
+  return Service.searchByName(name, res);
+};

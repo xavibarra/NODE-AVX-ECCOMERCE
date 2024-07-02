@@ -185,3 +185,30 @@ exports.update = async function (
     res.status(500).send({ error: err.message });
   }
 };
+
+// Función para buscar productos por nombre.
+exports.searchByName = async function (name: string, res: Response) {
+  try {
+    // Validar que el parámetro 'name' esté presente y sea una cadena válida
+    if (!name || typeof name !== "string") {
+      return res.status(400).send({ error: "Invalid search parameter: name" });
+    }
+
+    // Ejecutar la consulta para buscar productos cuyo nombre contenga el valor del parámetro 'name'
+    const { data, error } = await supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select("*")
+      .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
+      .limit(10);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    // Retornar los resultados
+    res.send(data);
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
