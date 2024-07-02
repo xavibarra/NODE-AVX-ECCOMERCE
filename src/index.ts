@@ -1,9 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
-import express, { Express } from "express";
+import express, { Express, Router } from "express";
 import { convertKeysToCamelCase } from "./lib/utils";
-import { Router } from 'express';
-import { searchComponents } from './controllers/searchController';
 
 dotenv.config();
 const app: Express = express();
@@ -35,14 +33,10 @@ app.use("/values", valuesRoutes);
 // Definir y usar las rutas adicionales
 const router = Router();
 
-// Define la ruta GET para buscar componentes
-router.get('/search', searchComponents);
-
 // Usar el enrutador para las rutas adicionales
-app.use('/api', router);
+app.use("/api", router);
 
 // Inicio del servidor, escuchando en el puerto especificado
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port} 🚀`);
 });
-
