@@ -9,7 +9,9 @@ dotenv.config();
 const app: Express = express();
 
 // Middleware para permitir CORS
-app.use(cors());
+app.use(cors({
+  origin: '*',
+}));
 
 // Middleware para parsear el cuerpo de las solicitudes en formato JSON
 app.use(express.json());
