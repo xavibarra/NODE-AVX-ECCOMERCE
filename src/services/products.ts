@@ -26,6 +26,26 @@ exports.findAll = async function (res: Response) {
   }
 };
 
+//Función para filtar los productos por oferta.
+exports.offerProducts = async function (res: Response) {
+  try {
+    const { data, error } = await supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select("*")
+      .eq("offer", true)
+      .limit(10);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.send(data);
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
+
 // Función para encontrar un producto por su ID.
 exports.findById = async function (req: Request, res: Response) {
   try {
@@ -58,8 +78,7 @@ exports.productsByCategory = async function (req: Request, res: Response) {
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
       .select("*")
-      .eq("category_id", id)
-      .limit(10);
+      .eq("category_id", id);
 
     if (error) {
       throw new Error(error.message);
