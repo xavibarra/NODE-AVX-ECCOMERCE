@@ -6,6 +6,9 @@ const products = require("express").Router();
 // Ruta GET para encontrar todos los productos.
 products.get("/", ControllerProducts.findAll);
 
+// Ruta para filtrar los productos en oferta
+products.get("/offer", ControllerProducts.offerProducts);
+
 // Ruta GET para encontrar un producto por su ID.
 products.get("/:productId", ControllerProducts.findById);
 
