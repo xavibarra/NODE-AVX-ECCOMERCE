@@ -2,6 +2,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Router } from "express";
 import { convertKeysToCamelCase } from "./lib/utils";
+import featureRoutes from './routes/values';
+
 
 dotenv.config();
 const app: Express = express();
@@ -29,6 +31,7 @@ const valuesRoutes = require("./routes/values");
 app.use("/categories", categoryRoutes);
 app.use("/products", productsRoutes);
 app.use("/values", valuesRoutes);
+
 
 // Definir y usar las rutas adicionales
 const router = Router();

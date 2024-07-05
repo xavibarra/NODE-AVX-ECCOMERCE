@@ -1,5 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { createClient } from "@supabase/supabase-js";
+const ControllerVaules = require("../controllers/values");
+const values = require("express").Router();
+
+
 
 // Configuración de Supabase
 const supabaseUrl: string = process.env.SUPABASE_URL || ""; // URL de tu base de datos de Supabase
@@ -218,3 +222,14 @@ exports.updateByProductId = async function (
     res.status(500).send({ error: err.message });
   }
 };
+
+// Función para obtener valores de características por ID de producto.
+exports.getFeatureValuesByProductId = async function (productId: number) {
+    const { data, error } = await supabase.rpc('product_features_query', { product_id: productId });
+  
+    if (error) {
+      console.error('Error fetching feature values:', error);
+      throw new Error('Error fetching feature values');
+    }
+    return data;
+  };
