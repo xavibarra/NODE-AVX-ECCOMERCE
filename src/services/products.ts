@@ -7,13 +7,22 @@ const supabaseKey: string = process.env.SUPABASE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const PRODUCTS_TABLE_NAME: string = "products";
+const CATEGORIES_TABLE_NAME: string = "categories";
 
 // Función para encontrar todos los productos.
 exports.findAll = async function (res: Response) {
   try {
-    const { data, error } = await supabase
-      .from(PRODUCTS_TABLE_NAME)
-      .select("*");
+    const { data, error } = await supabase.from(PRODUCTS_TABLE_NAME).select(`
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `);
 
     if (error) {
       throw new Error(error.message);
@@ -26,12 +35,24 @@ exports.findAll = async function (res: Response) {
   }
 };
 
-//Función para filtar los productos por oferta.
+// Función para filtrar los productos por oferta.
 exports.offerProducts = async function (res: Response) {
   try {
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select("*")
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
       .eq("offer", true)
       .limit(10);
 
@@ -52,7 +73,19 @@ exports.findById = async function (req: Request, res: Response) {
     const id = req.params.productId;
     const { data: product, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select("*")
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
       .eq("id", id)
       .single();
 
@@ -71,14 +104,27 @@ exports.findById = async function (req: Request, res: Response) {
   }
 };
 
-// Funcion para encontrar 10 productos según su categoria
+// Función para encontrar 10 productos según su categoría.
 exports.productsByCategory = async function (req: Request, res: Response) {
   try {
     const id = req.params.category_id;
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select("*")
-      .eq("category_id", id);
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
+      .eq("category_id", id)
+      .limit(10);
 
     if (error) {
       throw new Error(error.message);
@@ -216,7 +262,19 @@ exports.searchByName = async function (name: string, res: Response) {
     // Ejecutar la consulta para buscar productos cuyo nombre contenga el valor del parámetro 'name'
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select("*")
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
       .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
       .limit(10);
 
