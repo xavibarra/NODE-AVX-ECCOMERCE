@@ -8,6 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const PRODUCTS_TABLE_NAME: string = "products";
 const CATEGORIES_TABLE_NAME: string = "categories";
+const PAGE_SIZE = 20; // Tamaño de página
 
 // Función para encontrar todos los productos.
 exports.findAll = async function (res: Response) {
@@ -107,7 +108,12 @@ exports.findById = async function (req: Request, res: Response) {
 // Función para encontrar 10 productos según su categoría.
 exports.productsByCategory = async function (req: Request, res: Response) {
   try {
-    const id = req.params.category_id;
+    const categoryId = req.params.category_id;
+    const page = parseInt(req.query.page as string) || 1; // Página actual, por defecto la primera página
+
+    // Calcular el offset según la página solicitada
+    const offset = (page - 1) * PAGE_SIZE;
+
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
       .select(
@@ -123,8 +129,9 @@ exports.productsByCategory = async function (req: Request, res: Response) {
         )
       `
       )
-      .eq("category_id", id)
-      .limit(10);
+      .eq("category_id", categoryId)
+      .range(offset, offset + PAGE_SIZE - 1)
+      .order("id", { ascending: true });
 
     if (error) {
       throw new Error(error.message);

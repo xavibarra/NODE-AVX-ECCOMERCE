@@ -3,6 +3,12 @@ const products = require("express").Router();
 
 // Definición de rutas CRUD
 
+// Ruta GET para encontrar 10 productos según su categoria.
+products.get(
+  "/productsByCategory/:category_id",
+  ControllerProducts.productsByCategory
+);
+
 // Ruta GET para encontrar todos los productos.
 products.get("/", ControllerProducts.findAll);
 
@@ -11,12 +17,6 @@ products.get("/offer", ControllerProducts.offerProducts);
 
 // Ruta GET para encontrar un producto por su ID.
 products.get("/:productId", ControllerProducts.findById);
-
-// Ruta GET para encontrar 10 productos según su categoria.
-products.get(
-  "/productsByCategory/:category_id",
-  ControllerProducts.productsByCategory
-);
 
 // Ruta POST para crear un nuevo producto.
 products.post("/", ControllerProducts.create);
