@@ -2,16 +2,16 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Router } from "express";
 import { convertKeysToCamelCase } from "./lib/utils";
-import featureRoutes from './routes/values';
-
 
 dotenv.config();
 const app: Express = express();
 
 // Middleware para permitir CORS
-app.use(cors({
-  origin: '*',
-}));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 // Middleware para parsear el cuerpo de las solicitudes en formato JSON
 app.use(express.json());
@@ -26,12 +26,13 @@ const port = process.env.PORT || 3000;
 const categoryRoutes = require("./routes/categories");
 const productsRoutes = require("./routes/products");
 const valuesRoutes = require("./routes/values");
+const usersRoutes = require("./routes/users");
 
 // Rutas para manejar las peticiones relacionadas
 app.use("/categories", categoryRoutes);
 app.use("/products", productsRoutes);
 app.use("/values", valuesRoutes);
-
+app.use("/users", usersRoutes);
 
 // Definir y usar las rutas adicionales
 const router = Router();
