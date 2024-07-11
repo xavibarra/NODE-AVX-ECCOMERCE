@@ -105,16 +105,19 @@ exports.findById = async function (req: Request, res: Response) {
   }
 };
 
-// Función para encontrar 10 productos según su categoría.
+ 
 exports.productsByCategory = async function (req: Request, res: Response) {
   try {
     const categoryId = req.params.category_id;
     const page = parseInt(req.query.page as string) || 1; // Página actual, por defecto la primera página
+    const sort = req.query.sort as string; // Ordenar criterio
+    const minPrice = parseInt(req.query.minPrice as string) || 1; // Precio mínimo
+    const maxPrice = parseInt(req.query.maxPrice as string) || 5000; // Precio máximo
 
     // Calcular el offset según la página solicitada
     const offset = (page - 1) * PAGE_SIZE;
 
-    const { data, error } = await supabase
+    let query = supabase
       .from(PRODUCTS_TABLE_NAME)
       .select(
         `
@@ -130,18 +133,49 @@ exports.productsByCategory = async function (req: Request, res: Response) {
       `
       )
       .eq("category_id", categoryId)
-      .range(offset, offset + PAGE_SIZE - 1)
-      .order("id", { ascending: true });
+      .range(offset, offset + PAGE_SIZE - 1);
+
+    // Aplicar filtro por rango de precio
+    query = query
+      .gte("final_price", minPrice)
+      .lte("final_price", maxPrice);
+
+    // Aplicar ordenación según el criterio
+    if (sort === "lowestPrice") {
+      query = query.order("final_price", { ascending: true });
+    } else if (sort === "highestPrice") {
+      query = query.order("final_price", { ascending: false });
+    } else if (sort === "bestRated") {
+      query = query.order("rating", { ascending: false });
+    } else if (sort === "offers") {
+      query = query.order("discount", { ascending: false });
+    } else if (sort === "name") {
+      query = query.order("name", { ascending: true });
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       throw new Error(error.message);
     }
+
+    // Consultar el número total de productos en la categoría
+    const { count: totalCount, error: countError } = await supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select("id", { count: "exact" })
+      .eq("category_id", categoryId);
+
+    if (error) {
+      throw new Error(error);
+    }
+
     res.send(data);
   } catch (error: unknown) {
     const err = error as Error;
     res.status(500).send({ error: err.message });
   }
 };
+
 
 // Función para crear un nuevo producto.
 exports.create = async function (req: Request, res: Response) {
