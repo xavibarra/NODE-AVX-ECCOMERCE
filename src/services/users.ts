@@ -6,7 +6,7 @@ const supabaseUrl: string = process.env.SUPABASE_URL as string;
 const supabaseKey: string = process.env.SUPABASE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const USUARIOS_TABLE_NAME: string = "usuarios";
+const USUARIOS_TABLE_NAME: string = "profiles";
 
 // Función para encontrar todos los usuarios.
 exports.findAll = async function (req: Request, res: Response) {
@@ -28,13 +28,14 @@ exports.findAll = async function (req: Request, res: Response) {
 // Función para crear una nueva categoría.
 exports.create = async function (req: Request, res: Response) {
   try {
-    const { id, admin, cart } = req.body;
+    const { id, admin, cart, likes } = req.body;
 
     const { error } = await supabase.from(USUARIOS_TABLE_NAME).insert([
       {
         id,
         admin,
         cart,
+        likes,
       },
     ]);
 
