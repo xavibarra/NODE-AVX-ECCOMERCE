@@ -28,12 +28,11 @@ exports.findAll = async function (req: Request, res: Response) {
 // Función para crear una nueva categoría.
 exports.create = async function (req: Request, res: Response) {
   try {
-    const { id, uuid_user, admin, cart } = req.body;
+    const { id, admin, cart } = req.body;
 
     const { error } = await supabase.from(USUARIOS_TABLE_NAME).insert([
       {
         id,
-        uuid_user,
         admin,
         cart,
       },
