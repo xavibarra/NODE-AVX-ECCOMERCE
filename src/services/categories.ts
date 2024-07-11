@@ -144,3 +144,14 @@ exports.update = async function (
     res.status(500).send({ error: err.message });
   }
 };
+
+
+exports.getCategories = async () => {
+  const { data, error } = await supabase
+    .from('categories') // Asegúrate de que 'categories' es el nombre correcto de la tabla
+    .select('id, category_name_en'); // Asegúrate de que 'name' es el nombre correcto de la columna que contiene los nombres de las categorías
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+};
