@@ -55,7 +55,7 @@ exports.offerProducts = async function (res: Response) {
       `
       )
       .eq("offer", true)
-      .limit(10);
+      .limit(20);
 
     if (error) {
       throw new Error(error.message);
