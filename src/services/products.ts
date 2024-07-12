@@ -283,8 +283,7 @@ exports.searchByName = async function (name: string, res: Response) {
       `
       )
       .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
-      .limit(10);
-
+      .limit(40);
     if (error) {
       throw new Error(error.message);
     }
@@ -293,6 +292,52 @@ exports.searchByName = async function (name: string, res: Response) {
     res.send(data);
   } catch (error: unknown) {
     const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
+
+
+// Función para buscar productos por nombre y categoría.
+exports.searchByNameAndCategory = async function (name: string, category: string, res: Response) {
+  try {
+    console.log(`Searching for products with name: ${name} and category: ${category}`);
+    if (!name || typeof name !== "string") {
+      return res.status(400).send({ error: "Invalid search parameter: name" });
+    }
+
+    let query = supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
+      .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
+      .limit(10);
+
+    if (category) {
+      query = query.eq("category_id", category); // Agregar filtro de categoría
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    console.log('Products found:', data);
+    res.send(data);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('Error searching for products:', err.message);
     res.status(500).send({ error: err.message });
   }
 };
