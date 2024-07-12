@@ -49,3 +49,12 @@ exports.searchByName = function (req: Request, res: Response) {
   const name = req.params.name; // Extraer el parámetro de nombre de la ruta.
   return Service.searchByName(name, res);
 };
+
+
+// Función para buscar productos por nombre y categoría.
+exports.searchByNameAndCategory = function (req: Request, res: Response) {
+  const name = req.params.name; // Extraer el parámetro de nombre de la ruta.
+  const category = req.params.category; // Extraer el parámetro de categoría de los parámetros de la ruta.
+  return Service.searchByNameAndCategory(name, category, res);
+};
+

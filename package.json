@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "@libsql/client": "0.6.0",
-    "@supabase/supabase-js": "^2.43.1",
+    "@supabase/supabase-js": "^2.44.2",
     "cors": "^2.8.5",
-    "dotenv": "16.4.5",
+    "dotenv": "^16.4.5",
     "lodash": "^4.17.21"
   }
 }

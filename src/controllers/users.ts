@@ -6,6 +6,7 @@ exports.findAll = function (req: Request, res: Response) {
   return Service.findAll(req, res);
 };
 
+
 // Función para obtener un usuario por su ID.
 exports.findById = function (req: Request, res: Response) {
   return Service.findById(req, res);
@@ -25,3 +26,9 @@ exports.addToCart = function (req: Request, res: Response) {
 exports.addToLikes = function (req: Request, res: Response) {
   return Service.addToLikes(req, res);
 };
+
+// Definición de la función para crear una nueva categoría.
+exports.create = function (req: Request, res: Response) {
+  return Service.create(req, res);
+};
+
