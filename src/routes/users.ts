@@ -1,10 +1,20 @@
+const express = require("express");
 const ControllerUsers = require("../controllers/users");
-const users = require("express").Router();
+const users = express.Router();
 
-// Ruta GET para encontrar todas las categorías.
+// Ruta GET para encontrar todos los usuarios.
 users.get("/", ControllerUsers.findAll);
 
-// Ruta POST para crear una nueva categoría.
+// Ruta GET para obtener un usuario por su ID.
+users.get("/:id", ControllerUsers.findById);
+
+// Ruta POST para crear un nuevo usuario.
 users.post("/", ControllerUsers.create);
+
+// Ruta POST para añadir un producto al carrito de un usuario.
+users.post("/add-to-cart", ControllerUsers.addToCart);
+
+// Ruta POST para añadir un producto a los likes de un usuario.
+users.post("/add-like", ControllerUsers.addToLikes);
 
 module.exports = users;
