@@ -71,3 +71,17 @@ exports.updateByProductId = function (req: Request, res: Response) {
     res.status(500).send({ error: err.message });
   }
 };
+
+// Función para obtener los valores de características por ID de producto.
+exports.getFeatureValues = async (req: Request, res: Response) => {
+  const { productId } = req.params;
+  try {
+    const featureValues = await Service.getFeatureValuesByProductId(
+      Number(productId)
+    );
+    res.status(200).json(featureValues);
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};

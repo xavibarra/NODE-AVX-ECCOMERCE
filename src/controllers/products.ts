@@ -6,6 +6,11 @@ exports.findAll = function (req: Request, res: Response) {
   return Service.findAll(res);
 };
 
+//Función para filtrar los productos en oferta.
+exports.offerProducts = function (req: Request, res: Response) {
+  return Service.offerProducts(res);
+};
+
 // Definición de la función para encontrar un producto por su ID.
 exports.findById = function (req: Request, res: Response) {
   return Service.findById(req, res);
@@ -37,4 +42,10 @@ exports.update = function (req: Request, res: Response) {
   const id = req.params.productId;
   const updatedProduct = req.body;
   return Service.update(id, updatedProduct, res);
+};
+
+// Función para buscar productos por nombre.
+exports.searchByName = function (req: Request, res: Response) {
+  const name = req.params.name; // Extraer el parámetro de nombre de la ruta.
+  return Service.searchByName(name, res);
 };

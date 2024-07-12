@@ -1,3 +1,4 @@
+import { Router } from "express";
 const ControllerVaules = require("../controllers/values");
 const values = require("express").Router();
 
@@ -14,6 +15,9 @@ values.get("/product/:productId", ControllerVaules.findByProductId);
 
 // Ruta GET para encontrar un featuresValues por su ID_FEATURE.
 values.get("/feature/:featureId", ControllerVaules.findByFeatureId);
+
+// ÁLVARO
+values.get("/features/:productId", ControllerVaules.getFeatureValues);
 
 //--------------------------------- POST ------------------------------------------//
 
@@ -39,4 +43,13 @@ values.delete("/:valuesId", ControllerVaules.delete);
 // Ruta DELETE para eliminar un featuresValues por PRODUCT_ID.
 values.delete("/product/:productId", ControllerVaules.deleteByProductId);
 
+//----------------------------- FEATURES/VALUES -----------------------------------//
+
 module.exports = values;
+
+const router = Router();
+
+// Ruta para obtener los valores de características por ID de producto
+router.get("/features/:productId", ControllerVaules.getFeatureValues);
+
+export default router;

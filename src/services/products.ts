@@ -7,13 +7,55 @@ const supabaseKey: string = process.env.SUPABASE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const PRODUCTS_TABLE_NAME: string = "products";
+const CATEGORIES_TABLE_NAME: string = "categories";
+const PAGE_SIZE = 20; // Tamaño de página
 
 // Función para encontrar todos los productos.
 exports.findAll = async function (res: Response) {
   try {
+    const { data, error } = await supabase.from(PRODUCTS_TABLE_NAME).select(`
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.send(data);
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
+
+// Función para filtrar los productos por oferta.
+exports.offerProducts = async function (res: Response) {
+  try {
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select("*");
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
+      .eq("offer", true)
+      .limit(20);
 
     if (error) {
       throw new Error(error.message);
@@ -32,7 +74,19 @@ exports.findById = async function (req: Request, res: Response) {
     const id = req.params.productId;
     const { data: product, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select("*")
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
       .eq("id", id)
       .single();
 
@@ -51,19 +105,67 @@ exports.findById = async function (req: Request, res: Response) {
   }
 };
 
-// Funcion para encontrar 10 productos según su categoria
 exports.productsByCategory = async function (req: Request, res: Response) {
   try {
-    const id = req.params.category_id;
-    const { data, error } = await supabase
+    const categoryId = req.params.category_id;
+    const page = parseInt(req.query.page as string) || 1; // Página actual, por defecto la primera página
+    const sort = req.query.sort as string; // Ordenar criterio
+    const minPrice = parseInt(req.query.minPrice as string) || 1; // Precio mínimo
+    const maxPrice = parseInt(req.query.maxPrice as string) || 5000; // Precio máximo
+
+    // Calcular el offset según la página solicitada
+    const offset = (page - 1) * PAGE_SIZE;
+
+    let query = supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select("*")
-      .eq("category_id", id)
-      .limit(10);
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
+      .eq("category_id", categoryId)
+      .range(offset, offset + PAGE_SIZE - 1);
+
+    // Aplicar filtro por rango de precio
+    query = query.gte("final_price", minPrice).lte("final_price", maxPrice);
+
+    // Aplicar ordenación según el criterio
+    if (sort === "lowestPrice") {
+      query = query.order("final_price", { ascending: true });
+    } else if (sort === "highestPrice") {
+      query = query.order("final_price", { ascending: false });
+    } else if (sort === "bestRated") {
+      query = query.order("rating", { ascending: false });
+    } else if (sort === "offers") {
+      query = query.order("discount", { ascending: false });
+    } else if (sort === "name") {
+      query = query.order("name", { ascending: true });
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       throw new Error(error.message);
     }
+
+    // Consultar el número total de productos en la categoría
+    const { count: totalCount, error: countError } = await supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select("id", { count: "exact" })
+      .eq("category_id", categoryId);
+
+    if (error) {
+      throw new Error(error);
+    }
+
     res.send(data);
   } catch (error: unknown) {
     const err = error as Error;
@@ -180,6 +282,45 @@ exports.update = async function (
     }
 
     res.send({ message: "Product updated successfully" });
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
+
+// Función para buscar productos por nombre.
+exports.searchByName = async function (name: string, res: Response) {
+  try {
+    // Validar que el parámetro 'name' esté presente y sea una cadena válida
+    if (!name || typeof name !== "string") {
+      return res.status(400).send({ error: "Invalid search parameter: name" });
+    }
+
+    // Ejecutar la consulta para buscar productos cuyo nombre contenga el valor del parámetro 'name'
+    const { data, error } = await supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select(
+        `
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `
+      )
+      .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
+      .limit(10);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    // Retornar los resultados
+    res.send(data);
   } catch (error: unknown) {
     const err = error as Error;
     res.status(500).send({ error: err.message });
