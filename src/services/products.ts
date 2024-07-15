@@ -327,22 +327,17 @@ exports.searchByName = async function (name: string, res: Response) {
   }
 };
 
-// Función para buscar productos por nombre, categoría y rango de precios.
-exports.searchByNameAndCategory = async function (name: string, category: string, minPrice: string, maxPrice: string, res: Response) {
+
+export const searchByNameCategoryAndPrice = async (name: string, category: string, minPrice: string, maxPrice: string, res: Response): Promise<void> => {
   try {
-    const min = parseInt(minPrice) || 0;
-    const max = parseInt(maxPrice) || 5000;
-
-    console.log(`Searching for products with name: ${name}, category: ${category}, minPrice: ${min}, maxPrice: ${max}`);
-
-    if (!name || typeof name !== "string") {
-      return res.status(400).send({ error: "Invalid search parameter: name" });
+    if (!name || typeof name !== 'string') {
+      res.status(400).send({ error: 'Invalid search parameter: name' });
+      return;
     }
 
     let query = supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select(
-        `
+      .select(`
         *,
         ${CATEGORIES_TABLE_NAME} (
           category_name_es,
@@ -352,15 +347,19 @@ exports.searchByNameAndCategory = async function (name: string, category: string
           category_description_ca,
           category_description_en
         )
-      `
-      )
-      .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
-      .gte("final_price", min)
-      .lte("final_price", max)
+      `)
+      .ilike('name', `%${name}%`)
+      .gte('price', parseInt(minPrice, 10) || 0) // Filtro por precio mínimo
+      .lte('price', parseInt(maxPrice, 10) || 1000000) // Filtro por precio máximo
       .limit(40);
 
-    if (category) {
-      query = query.eq("category_id", category); // Agregar filtro de categoría
+    if (category && category !== 'undefined') {
+      const categoryId: number = parseInt(category, 10);
+      if (isNaN(categoryId)) {
+        res.status(400).send({ error: 'Invalid search parameter: category' });
+        return;
+      }
+      query = query.eq('category_id', categoryId);
     }
 
     const { data, error } = await query;
@@ -369,11 +368,9 @@ exports.searchByNameAndCategory = async function (name: string, category: string
       throw new Error(error.message);
     }
 
-    console.log('Products found:', data);
     res.send(data);
-  } catch (error: unknown) {
+  } catch (error) {
     const err = error as Error;
-    console.error('Error searching for products:', err.message);
     res.status(500).send({ error: err.message });
   }
 };
