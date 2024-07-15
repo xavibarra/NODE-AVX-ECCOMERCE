@@ -162,8 +162,8 @@ exports.productsByCategory = async function (req: Request, res: Response) {
       .select("id", { count: "exact" })
       .eq("category_id", categoryId);
 
-    if (error) {
-      throw new Error(error);
+    if (countError) {
+      throw new Error(countError.message);
     }
 
     res.send(data);
@@ -313,7 +313,7 @@ exports.searchByName = async function (name: string, res: Response) {
       `
       )
       .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
-      .limit(10);
+      .limit(40);
 
     if (error) {
       throw new Error(error.message);
@@ -327,10 +327,14 @@ exports.searchByName = async function (name: string, res: Response) {
   }
 };
 
-// Función para buscar productos por nombre y categoría.
-exports.searchByNameAndCategory = async function (name: string, category: string, res: Response) {
+// Función para buscar productos por nombre, categoría y rango de precios.
+exports.searchByNameAndCategory = async function (name: string, category: string, minPrice: string, maxPrice: string, res: Response) {
   try {
-    console.log(`Searching for products with name: ${name} and category: ${category}`);
+    const min = parseInt(minPrice) || 0;
+    const max = parseInt(maxPrice) || 5000;
+
+    console.log(`Searching for products with name: ${name}, category: ${category}, minPrice: ${min}, maxPrice: ${max}`);
+
     if (!name || typeof name !== "string") {
       return res.status(400).send({ error: "Invalid search parameter: name" });
     }
@@ -351,7 +355,9 @@ exports.searchByNameAndCategory = async function (name: string, category: string
       `
       )
       .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
-      .limit(10);
+      .gte("final_price", min)
+      .lte("final_price", max)
+      .limit(40);
 
     if (category) {
       query = query.eq("category_id", category); // Agregar filtro de categoría
