@@ -9,6 +9,11 @@ products.get(
   ControllerProducts.productsByCategory
 );
 
+products.get(
+  "/findReviewsByProductId/:product_id",
+  ControllerProducts.findReviewsByProductId
+);
+
 // Ruta GET para encontrar todos los productos.
 products.get("/", ControllerProducts.findAll);
 
