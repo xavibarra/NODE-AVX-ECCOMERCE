@@ -50,11 +50,15 @@ exports.searchByName = function (req: Request, res: Response) {
   return Service.searchByName(name, res);
 };
 
-// Función para buscar productos por nombre, categoría y rango de precios.
-exports.searchByNameAndCategory = function (req: Request, res: Response) {
-  const name = req.params.name; // Extraer el parámetro de nombre de la ruta.
-  const category = req.query.category as string; // Extraer el parámetro de categoría de los parámetros de consulta.
-  const minPrice = req.query.minPrice as string;
-  const maxPrice = req.query.maxPrice as string;
-  return Service.searchByNameAndCategory(name, category, minPrice, maxPrice, res);
+
+
+
+export const searchByNameAndCategory = async (req: Request, res: Response): Promise<void> => {
+  const { name, category, minPrice, maxPrice } = req.params;
+  return Service.searchByNameCategoryAndPrice(name, category, minPrice, maxPrice, res);
 };
+
+
+
+
+
