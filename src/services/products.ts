@@ -106,7 +106,6 @@ exports.findById = async function (req: Request, res: Response) {
   }
 };
 
- 
 exports.productsByCategory = async function (req: Request, res: Response) {
   try {
     const categoryId = req.params.category_id;
@@ -137,9 +136,7 @@ exports.productsByCategory = async function (req: Request, res: Response) {
       .range(offset, offset + PAGE_SIZE - 1);
 
     // Aplicar filtro por rango de precio
-    query = query
-      .gte("final_price", minPrice)
-      .lte("final_price", maxPrice);
+    query = query.gte("final_price", minPrice).lte("final_price", maxPrice);
 
     // Aplicar ordenación según el criterio
     if (sort === "lowestPrice") {
@@ -166,8 +163,8 @@ exports.productsByCategory = async function (req: Request, res: Response) {
       .select("id", { count: "exact" })
       .eq("category_id", categoryId);
 
-    if (error) {
-      throw new Error(error);
+    if (countError) {
+      throw new Error(countError.message);
     }
 
     res.send(data);
@@ -245,7 +242,6 @@ exports.createReview = async function (req: Request, res: Response) {
     res.status(500).send({ error: err.message });
   }
 };
-
 
 // Función para crear un nuevo producto.
 exports.create = async function (req: Request, res: Response) {
@@ -387,7 +383,7 @@ exports.searchByName = async function (name: string, res: Response) {
       `
       )
       .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
-      .limit(10);
+      .limit(40);
 
     if (error) {
       throw new Error(error.message);
@@ -396,6 +392,54 @@ exports.searchByName = async function (name: string, res: Response) {
     // Retornar los resultados
     res.send(data);
   } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
+
+
+export const searchByNameCategoryAndPrice = async (name: string, category: string, minPrice: string, maxPrice: string, res: Response): Promise<void> => {
+  try {
+    if (!name || typeof name !== 'string') {
+      res.status(400).send({ error: 'Invalid search parameter: name' });
+      return;
+    }
+
+    let query = supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select(`
+        *,
+        ${CATEGORIES_TABLE_NAME} (
+          category_name_es,
+          category_name_en,
+          category_name_ca,
+          category_description_es,
+          category_description_ca,
+          category_description_en
+        )
+      `)
+      .ilike('name', `%${name}%`)
+      .gte('price', parseInt(minPrice, 10) || 0) // Filtro por precio mínimo
+      .lte('price', parseInt(maxPrice, 10) || 1000000) // Filtro por precio máximo
+      .limit(40);
+
+    if (category && category !== 'undefined') {
+      const categoryId: number = parseInt(category, 10);
+      if (isNaN(categoryId)) {
+        res.status(400).send({ error: 'Invalid search parameter: category' });
+        return;
+      }
+      query = query.eq('category_id', categoryId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.send(data);
+  } catch (error) {
     const err = error as Error;
     res.status(500).send({ error: err.message });
   }
