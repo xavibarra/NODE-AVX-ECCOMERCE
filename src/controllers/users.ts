@@ -32,3 +32,7 @@ exports.create = function (req: Request, res: Response) {
   return Service.create(req, res);
 };
 
+// Función para vaciar el carrito de un usuario.
+exports.emptyCart = function (req: Request, res: Response) {
+  return Service.emptyCart(req, res);
+};

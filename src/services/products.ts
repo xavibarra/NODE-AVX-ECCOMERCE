@@ -327,23 +327,11 @@ exports.searchByName = async function (name: string, res: Response) {
   }
 };
 
-export const searchByNameCategoryAndPrice = async (
-  name: string,
-  category: string,
-  minPrice: string,
-  maxPrice: string,
-  res: Response
-): Promise<void> => {
+export const searchByNameCategoryAndPrice = async (name: string, category: string, minPrice: string, maxPrice: string, res: Response): Promise<void> => {
   try {
-    if (!name || typeof name !== "string") {
-      res.status(400).send({ error: "Invalid search parameter: name" });
-      return;
-    }
-
     let query = supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select(
-        `
+      .select(`
         *,
         ${CATEGORIES_TABLE_NAME} (
           category_name_es,
@@ -353,20 +341,20 @@ export const searchByNameCategoryAndPrice = async (
           category_description_ca,
           category_description_en
         )
-      `
-      )
-      .ilike("name", `%${name}%`)
-      .gte("price", parseInt(minPrice, 10) || 0) // Filtro por precio mínimo
-      .lte("price", parseInt(maxPrice, 10) || 1000000) // Filtro por precio máximo
+      `)
+      .gte('price', parseInt(minPrice, 10) || 0) // Filtro por precio mínimo
+      .lte('price', parseInt(maxPrice, 10) || 1000000) // Filtro por precio máximo
       .limit(40);
 
-    if (category && category !== "undefined") {
+    if (name) {
+      query = query.ilike('name', `%${name}%`);
+    }
+
+    if (category) {
       const categoryId: number = parseInt(category, 10);
-      if (isNaN(categoryId)) {
-        res.status(400).send({ error: "Invalid search parameter: category" });
-        return;
+      if (!isNaN(categoryId)) {
+        query = query.eq('category_id', categoryId);
       }
-      query = query.eq("category_id", categoryId);
     }
 
     const { data, error } = await query;

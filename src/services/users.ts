@@ -188,3 +188,31 @@ exports.addToLikes = async function (req: Request, res: Response) {
     res.status(500).send({ error: err.message });
   }
 };
+
+
+// Función para vaciar el carrito de un usuario.
+exports.emptyCart = async function (req: Request, res: Response) {
+  try {
+    const userId = req.params.userId;
+
+    // Verificamos que el userId esté presente
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
+
+    // Actualizar la columna 'cart' del usuario para vaciarla (ponerla en null)
+    const { data, error } = await supabase
+      .from(USUARIOS_TABLE_NAME)
+      .update({ cart: null })
+      .eq("id", userId); // Asegúrate de que estás usando "id" aquí
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.send({ message: "Cart emptied successfully" });
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
