@@ -31,9 +31,7 @@ products.put("/:productId", ControllerProducts.update);
 products.delete("/:productId", ControllerProducts.delete);
 
 // Ruta para buscar productos por nombre y categoría.
-products.get(
-  "/search/:name/:category?/:minPrice?/:maxPrice?",
-  ControllerProducts.searchByNameAndCategory
-);
+products.get('/search', ControllerProducts.searchByNameAndCategory);
+
 
 module.exports = products;

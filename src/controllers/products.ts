@@ -50,16 +50,8 @@ exports.searchByName = function (req: Request, res: Response) {
   return Service.searchByName(name, res);
 };
 
-export const searchByNameAndCategory = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { name, category, minPrice, maxPrice } = req.params;
-  return Service.searchByNameCategoryAndPrice(
-    name,
-    category,
-    minPrice,
-    maxPrice,
-    res
-  );
+export const searchByNameAndCategory = async (req: Request, res: Response): Promise<void> => {
+  const { name, category, minPrice, maxPrice } = req.query;
+  return Service.searchByNameCategoryAndPrice(name, category, minPrice, maxPrice, res);
 };
+
