@@ -9,11 +9,6 @@ products.get(
   ControllerProducts.productsByCategory
 );
 
-products.get(
-  "/findReviewsByProductId/:product_id",
-  ControllerProducts.findReviewsByProductId
-);
-
 // Ruta GET para encontrar todos los productos.
 products.get("/", ControllerProducts.findAll);
 
@@ -36,7 +31,9 @@ products.put("/:productId", ControllerProducts.update);
 products.delete("/:productId", ControllerProducts.delete);
 
 // Ruta para buscar productos por nombre y categoría.
-products.get('/search/:name/:category?/:minPrice?/:maxPrice?', ControllerProducts.searchByNameAndCategory);
-
+products.get(
+  "/search/:name/:category?/:minPrice?/:maxPrice?",
+  ControllerProducts.searchByNameAndCategory
+);
 
 module.exports = products;
