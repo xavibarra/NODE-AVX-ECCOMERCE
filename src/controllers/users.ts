@@ -22,9 +22,18 @@ exports.addToCart = function (req: Request, res: Response) {
   return Service.addToCart(req, res);
 };
 
+exports.checkLike = function (req: Request, res: Response) {
+  return Service.checkLike(req, res);
+};
+
 // Función para añadir un producto al carrito de un usuario.
 exports.addToLikes = function (req: Request, res: Response) {
   return Service.addToLikes(req, res);
+};
+
+// Función para añadir un producto al carrito de un usuario.
+exports.removeToLike = function (req: Request, res: Response) {
+  return Service.removeToLike(req, res);
 };
 
 // Definición de la función para crear una nueva categoría.
