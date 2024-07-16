@@ -8,7 +8,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const PRODUCTS_TABLE_NAME: string = "products";
 const CATEGORIES_TABLE_NAME: string = "categories";
-const REVIEWS_TABLE_NAME: string = "reviews"; 
 const PAGE_SIZE = 20; // Tamaño de página
 
 // Función para encontrar todos los productos.
@@ -174,75 +173,6 @@ exports.productsByCategory = async function (req: Request, res: Response) {
   }
 };
 
-export async function findReviewsByProductId(req: Request, res: Response) {
-  try {
-    const productId = parseInt(req.params.product_id);
-
-    // Validar que productId esté definido y no sea undefined
-    if (isNaN(productId)) {
-      throw new Error("Product ID must be a valid number");
-    }
-
-    console.log(`Fetching reviews for product ID: ${productId}`);
-
-    // Construir la consulta con filtro explícito
-    const { data, error, count } = await supabase
-      .from(REVIEWS_TABLE_NAME)
-      .select("*")
-      .eq('product_id', productId);
-
-    console.log("Supabase URL:", supabaseUrl);
-    console.log("Supabase query:", `${supabaseUrl}/rest/v1/${REVIEWS_TABLE_NAME}?product_id=eq.${productId}`);
-    console.log("Product ID:", productId);
-    console.log("Supabase response:", { data, error, count });
-
-    if (error) {
-      console.error("Error fetching reviews:", error.message);
-      throw new Error(error.message);
-    }
-
-    if (!data || data.length === 0) {
-      console.log(`No reviews found for product ID ${productId}`);
-      res.status(404).send({ error: `No reviews found for product ID ${productId}` });
-      return;
-    }
-
-    console.log(`Found ${data.length} reviews for product ID ${productId}`);
-    res.status(200).send(data);
-  } catch (error: unknown) {
-    const err = error as Error;
-    console.error("Error:", err.message);
-    res.status(500).send({ error: err.message });
-  }
-}
-
-
-// Función para crear una nueva reseña
-exports.createReview = async function (req: Request, res: Response) {
-  try {
-    const { id_product, rating, comment } = req.body;
-
-    // Validar los datos de entrada
-    if (!id_product || !rating || !comment) {
-      throw new Error("id_product, rating, and comment are required");
-    }
-
-    // Insertar la nueva reseña en la base de datos
-    const { data, error } = await supabase.from(REVIEWS_TABLE_NAME).insert([
-      { id_product, rating, comment },
-    ]);
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    res.status(201).send({ message: "Review created successfully", review: data });
-  } catch (error: unknown) {
-    const err = error as Error;
-    res.status(500).send({ error: err.message });
-  }
-};
-
 // Función para crear un nuevo producto.
 exports.create = async function (req: Request, res: Response) {
   try {
@@ -397,17 +327,23 @@ exports.searchByName = async function (name: string, res: Response) {
   }
 };
 
-
-export const searchByNameCategoryAndPrice = async (name: string, category: string, minPrice: string, maxPrice: string, res: Response): Promise<void> => {
+export const searchByNameCategoryAndPrice = async (
+  name: string,
+  category: string,
+  minPrice: string,
+  maxPrice: string,
+  res: Response
+): Promise<void> => {
   try {
-    if (!name || typeof name !== 'string') {
-      res.status(400).send({ error: 'Invalid search parameter: name' });
+    if (!name || typeof name !== "string") {
+      res.status(400).send({ error: "Invalid search parameter: name" });
       return;
     }
 
     let query = supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select(`
+      .select(
+        `
         *,
         ${CATEGORIES_TABLE_NAME} (
           category_name_es,
@@ -417,19 +353,20 @@ export const searchByNameCategoryAndPrice = async (name: string, category: strin
           category_description_ca,
           category_description_en
         )
-      `)
-      .ilike('name', `%${name}%`)
-      .gte('price', parseInt(minPrice, 10) || 0) // Filtro por precio mínimo
-      .lte('price', parseInt(maxPrice, 10) || 1000000) // Filtro por precio máximo
+      `
+      )
+      .ilike("name", `%${name}%`)
+      .gte("price", parseInt(minPrice, 10) || 0) // Filtro por precio mínimo
+      .lte("price", parseInt(maxPrice, 10) || 1000000) // Filtro por precio máximo
       .limit(40);
 
-    if (category && category !== 'undefined') {
+    if (category && category !== "undefined") {
       const categoryId: number = parseInt(category, 10);
       if (isNaN(categoryId)) {
-        res.status(400).send({ error: 'Invalid search parameter: category' });
+        res.status(400).send({ error: "Invalid search parameter: category" });
         return;
       }
-      query = query.eq('category_id', categoryId);
+      query = query.eq("category_id", categoryId);
     }
 
     const { data, error } = await query;

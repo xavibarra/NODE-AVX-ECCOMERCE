@@ -16,10 +16,6 @@ exports.findById = function (req: Request, res: Response) {
   return Service.findById(req, res);
 };
 
-// Definición de la función para encontrar 10 reviews por su producto.
-exports.findReviewsByProductId = function (req: Request, res: Response) {
-  return Service.findReviewsByProductId(req, res);
-};
 // Definición de la función para encontrar 10 productos por su categoria.
 exports.productsByCategory = function (req: Request, res: Response) {
   return Service.productsByCategory(req, res);
@@ -54,15 +50,16 @@ exports.searchByName = function (req: Request, res: Response) {
   return Service.searchByName(name, res);
 };
 
-
-
-
-export const searchByNameAndCategory = async (req: Request, res: Response): Promise<void> => {
+export const searchByNameAndCategory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { name, category, minPrice, maxPrice } = req.params;
-  return Service.searchByNameCategoryAndPrice(name, category, minPrice, maxPrice, res);
+  return Service.searchByNameCategoryAndPrice(
+    name,
+    category,
+    minPrice,
+    maxPrice,
+    res
+  );
 };
-
-
-
-
-
