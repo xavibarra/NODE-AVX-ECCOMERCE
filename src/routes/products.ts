@@ -33,4 +33,6 @@ products.delete("/:productId", isAdmin, ControllerProducts.delete);
 // Ruta para buscar productos por nombre y categoría (acceso público)
 products.get('/search', ControllerProducts.searchByNameAndCategory);
 
+products.get("/search/:name", ControllerProducts.searchByName);
+
 module.exports = products;
