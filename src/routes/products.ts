@@ -30,8 +30,17 @@ products.put("/:productId", ControllerProducts.update);
 // Ruta DELETE para eliminar un producto por su ID.
 products.delete("/:productId", ControllerProducts.delete);
 
-// Ruta para buscar productos por nombre y categoría.
-products.get('/search', ControllerProducts.searchByNameAndCategory);
+// Ruta para buscar productos por nombre directamente en la URL.
+products.get("/search/:name", ControllerProducts.searchByName);
+
+
+
+// Rutas de búsqueda con diferentes filtros
+products.get('/searchByPrice/:minPrice/:maxPrice', ControllerProducts.searchByPrice);
+products.get('/searchByPriceAndName/:minPrice/:maxPrice/:name', ControllerProducts.searchByPriceAndName);
+products.get('/searchByPriceAndCategory/:minPrice/:maxPrice/:category', ControllerProducts.searchByPriceAndCategory);
+products.get('/searchByAllFilters/:minPrice/:maxPrice/:name/:category', ControllerProducts.searchByAllFilters);
+
 
 
 module.exports = products;
