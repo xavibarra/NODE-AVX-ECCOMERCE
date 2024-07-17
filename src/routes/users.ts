@@ -1,11 +1,12 @@
+import express from 'express';
 const ControllerUsers = require("../controllers/users");
 const users = express.Router();
 
 // Ruta GET para encontrar todos los usuarios (requiere ser administrador)
-users.get("/", isAdmin, ControllerUsers.findAll);
+users.get("/", ControllerUsers.findAll);
 
 // Ruta GET para verificar si un usuario ha dado like a un producto (requiere ser administrador)
-users.get("/check-like", isAdmin, ControllerUsers.checkLike);
+users.get("/check-like", ControllerUsers.checkLike);
 
 // Ruta POST para crear un nuevo usuario (acceso público)
 users.post("/", ControllerUsers.create);
