@@ -1,9 +1,12 @@
-const express = require('express');
+const express = require("express");
 const ControllerUsers = require("../controllers/users");
 const users = express.Router();
 
 // Ruta GET para encontrar todos los usuarios (requiere ser administrador)
 users.get("/", ControllerUsers.findAll);
+
+// Ruta para encontrar un usuario por su id
+users.get("/getById/:userId", ControllerUsers.getUserById);
 
 // Ruta GET para verificar si un usuario ha dado like a un producto (requiere ser administrador)
 users.get("/check-like", ControllerUsers.checkLike);
