@@ -1,34 +1,34 @@
+const express = require("express");
 const ControllerProducts = require("../controllers/products");
-const products = require("express").Router();
+const isAdmin = require("../middlewares/isAdmin"); // Importa tu middleware isAdmin
+const products = express.Router();
 
-// Definición de rutas CRUD
-
-// Ruta GET para encontrar 10 productos según su categoria.
+// Ruta GET para encontrar 10 productos según su categoría.
 products.get(
   "/productsByCategory/:category_id",
   ControllerProducts.productsByCategory
 );
 
-// Ruta GET para encontrar todos los productos.
-products.get("/", ControllerProducts.findAll);
+// Ruta GET para encontrar todos los productos (requiere ser administrador)
+products.get("/", isAdmin, ControllerProducts.findAll);
 
-// Ruta para filtrar los productos en oferta
-products.get("/offer", ControllerProducts.offerProducts);
+// Ruta para filtrar los productos en oferta (requiere ser administrador)
+products.get("/offer", isAdmin, ControllerProducts.offerProducts);
 
-// Ruta GET para encontrar un producto por su ID.
+// Ruta GET para encontrar un producto por su ID (acceso público)
 products.get("/:productId", ControllerProducts.findById);
 
-// Ruta POST para crear un nuevo producto.
-products.post("/", ControllerProducts.create);
+// Ruta POST para crear un nuevo producto (requiere ser administrador)
+products.post("/", isAdmin, ControllerProducts.create);
 
-// Ruta POST para crear múltiples productos.
-products.post("/all", ControllerProducts.createMultiple);
+// Ruta POST para crear múltiples productos (requiere ser administrador)
+products.post("/all", isAdmin, ControllerProducts.createMultiple);
 
-// Ruta PUT/PATCH para actualizar un producto por su ID.
-products.put("/:productId", ControllerProducts.update);
+// Ruta PUT/PATCH para actualizar un producto por su ID (requiere ser administrador)
+products.put("/:productId", isAdmin, ControllerProducts.update);
 
-// Ruta DELETE para eliminar un producto por su ID.
-products.delete("/:productId", ControllerProducts.delete);
+// Ruta DELETE para eliminar un producto por su ID (requiere ser administrador)
+products.delete("/:productId", isAdmin, ControllerProducts.delete);
 
 // Ruta para buscar productos por nombre directamente en la URL.
 products.get("/search/:name", ControllerProducts.searchByName);
@@ -42,5 +42,7 @@ products.get('/searchByPriceAndCategory/:minPrice/:maxPrice/:category', Controll
 products.get('/searchByAllFilters/:minPrice/:maxPrice/:name/:category', ControllerProducts.searchByAllFilters);
 
 
+
+products.get("/search/:name", ControllerProducts.searchByName);
 
 module.exports = products;

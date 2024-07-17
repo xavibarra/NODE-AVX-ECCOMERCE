@@ -8,7 +8,23 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const REVIEWS_TABLE_NAME: string = "reviews";
 
-// Función para encontrar una reviews
+// Función para encontrar todas las reviews
+exports.findAll = async function (res: Response) {
+  try {
+    const { data, error } = await supabase.from(REVIEWS_TABLE_NAME).select(`*`);
+
+    if (error) {
+      console.error("Error fetching reviews:", error.message); // Log de error
+      throw new Error(error.message);
+    }
+    res.send(data);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Unexpected error:", err.message); // Log de error inesperado
+    res.status(500).send({ error: err.message });
+  }
+};
+// Función para encontrar las reviwes de un producto por su id
 export async function findReviewsByProductId(req: Request, res: Response) {
   try {
     const productId = parseInt(req.params.product_id);
@@ -18,21 +34,11 @@ export async function findReviewsByProductId(req: Request, res: Response) {
       throw new Error("Product ID must be a valid number");
     }
 
-    console.log(`Fetching reviews for product ID: ${productId}`);
-
     // Construir la consulta con filtro explícito
     const { data, error, count } = await supabase
       .from(REVIEWS_TABLE_NAME)
       .select("*")
       .eq("product_id", productId);
-
-    console.log("Supabase URL:", supabaseUrl);
-    console.log(
-      "Supabase query:",
-      `${supabaseUrl}/rest/v1/${REVIEWS_TABLE_NAME}?product_id=eq.${productId}`
-    );
-    console.log("Product ID:", productId);
-    console.log("Supabase response:", { data, error, count });
 
     if (error) {
       console.error("Error fetching reviews:", error.message);
@@ -40,14 +46,12 @@ export async function findReviewsByProductId(req: Request, res: Response) {
     }
 
     if (!data || data.length === 0) {
-      console.log(`No reviews found for product ID ${productId}`);
       res
         .status(404)
         .send({ error: `No reviews found for product ID ${productId}` });
       return;
     }
 
-    console.log(`Found ${data.length} reviews for product ID ${productId}`);
     res.status(200).send(data);
   } catch (error: unknown) {
     const err = error as Error;
