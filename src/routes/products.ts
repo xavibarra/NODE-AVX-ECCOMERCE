@@ -36,4 +36,6 @@ products.get(
   ControllerProducts.searchByNameAndCategory
 );
 
+products.get("/search/:name", ControllerProducts.searchByName);
+
 module.exports = products;
