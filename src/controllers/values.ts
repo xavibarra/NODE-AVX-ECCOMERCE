@@ -85,3 +85,17 @@ exports.getFeatureValues = async (req: Request, res: Response) => {
     res.status(500).send({ error: err.message });
   }
 };
+
+
+exports.findFeatureValuesByCategory = async function (req: Request, res: Response) {
+  const { categoryId } = req.params;
+  try {
+    const featureValues = await Service.getFeatureValuesByCategoryId(
+      Number(categoryId)
+    );
+    res.status(200).json(featureValues);
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};

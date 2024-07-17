@@ -1,55 +1,57 @@
 import { Router } from "express";
-const ControllerVaules = require("../controllers/values");
+const ControllerValues = require("../controllers/values");
 const values = require("express").Router();
 
 //--------------------------------- GET ------------------------------------------//
 
 // Ruta para obtener todos los valores de featuresValues
-values.get("/", ControllerVaules.findAll);
+values.get("/", ControllerValues.findAll);
 
 // Ruta GET para encontrar un featuresValues por su ID.
-values.get("/:valuesId", ControllerVaules.findById);
+values.get("/:valuesId", ControllerValues.findById);
 
 // Ruta GET para encontrar un featuresValues por su ID_PRODUCT.
-values.get("/product/:productId", ControllerVaules.findByProductId);
+values.get("/product/:productId", ControllerValues.findByProductId);
 
 // Ruta GET para encontrar un featuresValues por su ID_FEATURE.
-values.get("/feature/:featureId", ControllerVaules.findByFeatureId);
+values.get("/feature/:featureId", ControllerValues.findByFeatureId);
 
 // ÁLVARO
-values.get("/features/:productId", ControllerVaules.getFeatureValues);
+values.get("/features/:productId", ControllerValues.getFeatureValues);
 
 //--------------------------------- POST ------------------------------------------//
 
 // Ruta POST para crear un nuevo featuresValues.
-values.post("/", ControllerVaules.create);
+values.post("/", ControllerValues.create);
 
 // Ruta POST para crear múltiples featuresValues.
-values.post("/all", ControllerVaules.createMultiple);
+values.post("/all", ControllerValues.createMultiple);
 
 //--------------------------------- PUT ------------------------------------------//
 
 // Ruta PUT/PATCH para actualizar un featuresValues por su ID.
-values.put("/:valuesId", ControllerVaules.update);
+values.put("/:valuesId", ControllerValues.update);
 
 // Ruta PUT/PATCH para actualizar un featuresValues por PRODUCT_ID.
-values.put("/product/:productId", ControllerVaules.updateByProductId);
+values.put("/product/:productId", ControllerValues.updateByProductId);
 
 //--------------------------------- DELETE ------------------------------------------//
 
 // Ruta DELETE para eliminar un featuresValues por su ID.
-values.delete("/:valuesId", ControllerVaules.delete);
+values.delete("/:valuesId", ControllerValues.delete);
 
 // Ruta DELETE para eliminar un featuresValues por PRODUCT_ID.
-values.delete("/product/:productId", ControllerVaules.deleteByProductId);
+values.delete("/product/:productId", ControllerValues.deleteByProductId);
 
 //----------------------------- FEATURES/VALUES -----------------------------------//
+
+values.get("/values/category/:categoryId", ControllerValues.findFeatureValuesByCategory);
 
 module.exports = values;
 
 const router = Router();
 
 // Ruta para obtener los valores de características por ID de producto
-router.get("/features/:productId", ControllerVaules.getFeatureValues);
+router.get("/features/:productId", ControllerValues.getFeatureValues);
 
 export default router;
