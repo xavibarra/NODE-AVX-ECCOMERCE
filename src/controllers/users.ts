@@ -6,10 +6,9 @@ exports.findAll = function (req: Request, res: Response) {
   return Service.findAll(req, res);
 };
 
-
 // Función para obtener un usuario por su ID.
-exports.findById = function (req: Request, res: Response) {
-  return Service.findById(req, res);
+exports.getUserById = function (req: Request, res: Response) {
+  return Service.getUserById(req, res);
 };
 
 // Definición de la función para crear un nuevo usuario.

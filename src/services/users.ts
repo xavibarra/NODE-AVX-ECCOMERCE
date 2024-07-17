@@ -1,12 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 // Configuración de Supabase
 const supabaseUrl: string = process.env.SUPABASE_URL as string;
 const supabaseKey: string = process.env.SUPABASE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const USUARIOS_TABLE_NAME: string = "profiles";
+const USUARIOS_TABLE_NAME: string = "auth.users";
 
 // Función para encontrar todos los usuarios.
 exports.findAll = async function (req: Request, res: Response) {
@@ -308,5 +308,3 @@ exports.emptyCart = async function (req: Request, res: Response) {
     res.status(500).send({ error: err.message });
   }
 };
-
-
