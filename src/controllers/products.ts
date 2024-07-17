@@ -50,8 +50,26 @@ exports.searchByName = function (req: Request, res: Response) {
   return Service.searchByName(name, res);
 };
 
-export const searchByNameAndCategory = async (req: Request, res: Response): Promise<void> => {
-  const { name, category, minPrice, maxPrice } = req.query;
-  return Service.searchByNameCategoryAndPrice(name, category, minPrice, maxPrice, res);
+// Filtros por precio
+exports.searchByPrice = function (req: Request, res: Response) {
+  const { minPrice, maxPrice } = req.params;
+  return Service.searchByPrice(minPrice, maxPrice, res);
 };
 
+// Filtros por precio y nombre
+exports.searchByPriceAndName = function (req: Request, res: Response) {
+  const { minPrice, maxPrice, name } = req.params;
+  return Service.searchByPriceAndName(minPrice, maxPrice, name, res);
+};
+
+// Filtros por precio y categoría
+exports.searchByPriceAndCategory = function (req: Request, res: Response) {
+  const { minPrice, maxPrice, category } = req.params;
+  return Service.searchByPriceAndCategory(minPrice, maxPrice, category, res);
+};
+
+// Filtros por precio, nombre y categoría
+exports.searchByAllFilters = function (req: Request, res: Response) {
+  const { minPrice, maxPrice, name, category } = req.params;
+  return Service.searchByAllFilters(minPrice, maxPrice, name, category, res);
+};

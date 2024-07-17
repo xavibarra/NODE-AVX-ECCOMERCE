@@ -314,7 +314,6 @@ exports.searchByName = async function (name: string, res: Response) {
       )
       .ilike("name", `%${name}%`) // Uso de 'ilike' para búsqueda insensible a mayúsculas y minúsculas
       .limit(40);
-
     if (error) {
       throw new Error(error.message);
     }
@@ -327,44 +326,100 @@ exports.searchByName = async function (name: string, res: Response) {
   }
 };
 
-export const searchByNameCategoryAndPrice = async (name: string, category: string, minPrice: string, maxPrice: string, res: Response): Promise<void> => {
+// Búsqueda por precio
+exports.searchByPrice = async function (minPrice: string, maxPrice: string, res: Response) {
   try {
-    let query = supabase
+    const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
-      .select(`
-        *,
-        ${CATEGORIES_TABLE_NAME} (
-          category_name_es,
-          category_name_en,
-          category_name_ca,
-          category_description_es,
-          category_description_ca,
-          category_description_en
-        )
-      `)
-      .gte('price', parseInt(minPrice, 10) || 0) // Filtro por precio mínimo
-      .lte('price', parseInt(maxPrice, 10) || 1000000) // Filtro por precio máximo
-      .limit(40);
-
-    if (name) {
-      query = query.ilike('name', `%${name}%`);
-    }
-
-    if (category) {
-      const categoryId: number = parseInt(category, 10);
-      if (!isNaN(categoryId)) {
-        query = query.eq('category_id', categoryId);
-      }
-    }
-
-    const { data, error } = await query;
+      .select("*")
+      .limit(40)
+      .gte('price', parseInt(minPrice, 10) || 0)
+      .lte('price', parseInt(maxPrice, 10) || 1000000);
+      
 
     if (error) {
       throw new Error(error.message);
     }
 
     res.send(data);
-  } catch (error) {
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
+
+// Búsqueda por precio y nombre
+exports.searchByPriceAndName = async function (minPrice: string, maxPrice: string, name: string, res: Response) {
+  try {
+    const { data, error } = await supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select("*")
+      .limit(40)
+      .gte('price', parseInt(minPrice, 10) || 0)
+      .lte('price', parseInt(maxPrice, 10) || 1000000)
+      .ilike('name', `%${name}%`);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.send(data);
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
+
+// Búsqueda por precio y categoría
+exports.searchByPriceAndCategory = async function (minPrice: string, maxPrice: string, category: string, res: Response) {
+  try {
+    const categoryId: number = parseInt(category, 10);
+    if (isNaN(categoryId)) {
+      return res.status(400).send({ error: "Invalid search parameter: category" });
+    }
+
+    const { data, error } = await supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select("*")
+      .limit(40)
+      .gte('price', parseInt(minPrice, 10) || 0)
+      .lte('price', parseInt(maxPrice, 10) || 1000000)
+      .eq('category_id', categoryId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.send(data);
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
+
+// Búsqueda por precio, nombre y categoría
+exports.searchByAllFilters = async function (minPrice: string, maxPrice: string, name: string, category: string, res: Response) {
+  try {
+    const categoryId: number = parseInt(category, 10);
+    if (isNaN(categoryId)) {
+      return res.status(400).send({ error: "Invalid search parameter: category" });
+    }
+
+    const { data, error } = await supabase
+      .from(PRODUCTS_TABLE_NAME)
+      .select("*")
+      .limit(40)
+      .gte('price', parseInt(minPrice, 10) || 0)
+      .lte('price', parseInt(maxPrice, 10) || 1000000)
+      .ilike('name', `%${name}%`)
+      .eq('category_id', categoryId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.send(data);
+  } catch (error: unknown) {
     const err = error as Error;
     res.status(500).send({ error: err.message });
   }
