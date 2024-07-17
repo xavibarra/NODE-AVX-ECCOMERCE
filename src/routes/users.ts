@@ -26,4 +26,6 @@ users.delete("/remove-like", ControllerUsers.removeToLikes);
 // Ruta POST para vaciar el carrito de un usuario (acceso público)
 users.post("/empty-cart/:userId", ControllerUsers.emptyCart);
 
+
+
 module.exports = users;

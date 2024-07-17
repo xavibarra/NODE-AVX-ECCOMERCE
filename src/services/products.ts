@@ -181,7 +181,7 @@ exports.create = async function (req: Request, res: Response) {
       price,
       category_id,
       image_url,
-      isOffer,
+      offer,
       discount,
       rating,
       barcelonaStock,
@@ -196,13 +196,18 @@ exports.create = async function (req: Request, res: Response) {
       segoviaStock,
     } = req.body;
 
+    // Verificar si todos los campos requeridos están presentes
+    if (!name || !price || !category_id || !image_url) {
+      return res.status(400).send({ error: "Missing required fields" });
+    }
+
     const { error } = await supabase.from(PRODUCTS_TABLE_NAME).insert([
       {
         name,
         price,
         category_id,
         image_url,
-        isOffer,
+        offer,
         discount,
         rating,
         barcelonaStock,
@@ -327,15 +332,18 @@ exports.searchByName = async function (name: string, res: Response) {
 };
 
 // Búsqueda por precio
-exports.searchByPrice = async function (minPrice: string, maxPrice: string, res: Response) {
+exports.searchByPrice = async function (
+  minPrice: string,
+  maxPrice: string,
+  res: Response
+) {
   try {
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
       .select("*")
       .limit(40)
-      .gte('price', parseInt(minPrice, 10) || 0)
-      .lte('price', parseInt(maxPrice, 10) || 1000000);
-      
+      .gte("price", parseInt(minPrice, 10) || 0)
+      .lte("price", parseInt(maxPrice, 10) || 1000000);
 
     if (error) {
       throw new Error(error.message);
@@ -349,15 +357,20 @@ exports.searchByPrice = async function (minPrice: string, maxPrice: string, res:
 };
 
 // Búsqueda por precio y nombre
-exports.searchByPriceAndName = async function (minPrice: string, maxPrice: string, name: string, res: Response) {
+exports.searchByPriceAndName = async function (
+  minPrice: string,
+  maxPrice: string,
+  name: string,
+  res: Response
+) {
   try {
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
       .select("*")
       .limit(40)
-      .gte('price', parseInt(minPrice, 10) || 0)
-      .lte('price', parseInt(maxPrice, 10) || 1000000)
-      .ilike('name', `%${name}%`);
+      .gte("price", parseInt(minPrice, 10) || 0)
+      .lte("price", parseInt(maxPrice, 10) || 1000000)
+      .ilike("name", `%${name}%`);
 
     if (error) {
       throw new Error(error.message);
@@ -371,20 +384,27 @@ exports.searchByPriceAndName = async function (minPrice: string, maxPrice: strin
 };
 
 // Búsqueda por precio y categoría
-exports.searchByPriceAndCategory = async function (minPrice: string, maxPrice: string, category: string, res: Response) {
+exports.searchByPriceAndCategory = async function (
+  minPrice: string,
+  maxPrice: string,
+  category: string,
+  res: Response
+) {
   try {
     const categoryId: number = parseInt(category, 10);
     if (isNaN(categoryId)) {
-      return res.status(400).send({ error: "Invalid search parameter: category" });
+      return res
+        .status(400)
+        .send({ error: "Invalid search parameter: category" });
     }
 
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
       .select("*")
       .limit(40)
-      .gte('price', parseInt(minPrice, 10) || 0)
-      .lte('price', parseInt(maxPrice, 10) || 1000000)
-      .eq('category_id', categoryId);
+      .gte("price", parseInt(minPrice, 10) || 0)
+      .lte("price", parseInt(maxPrice, 10) || 1000000)
+      .eq("category_id", categoryId);
 
     if (error) {
       throw new Error(error.message);
@@ -398,21 +418,29 @@ exports.searchByPriceAndCategory = async function (minPrice: string, maxPrice: s
 };
 
 // Búsqueda por precio, nombre y categoría
-exports.searchByAllFilters = async function (minPrice: string, maxPrice: string, name: string, category: string, res: Response) {
+exports.searchByAllFilters = async function (
+  minPrice: string,
+  maxPrice: string,
+  name: string,
+  category: string,
+  res: Response
+) {
   try {
     const categoryId: number = parseInt(category, 10);
     if (isNaN(categoryId)) {
-      return res.status(400).send({ error: "Invalid search parameter: category" });
+      return res
+        .status(400)
+        .send({ error: "Invalid search parameter: category" });
     }
 
     const { data, error } = await supabase
       .from(PRODUCTS_TABLE_NAME)
       .select("*")
       .limit(40)
-      .gte('price', parseInt(minPrice, 10) || 0)
-      .lte('price', parseInt(maxPrice, 10) || 1000000)
-      .ilike('name', `%${name}%`)
-      .eq('category_id', categoryId);
+      .gte("price", parseInt(minPrice, 10) || 0)
+      .lte("price", parseInt(maxPrice, 10) || 1000000)
+      .ilike("name", `%${name}%`)
+      .eq("category_id", categoryId);
 
     if (error) {
       throw new Error(error.message);
