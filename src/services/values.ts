@@ -233,3 +233,22 @@ exports.getFeatureValuesByProductId = async function (productId: number) {
   }
   return data;
 };
+
+// Fetch feature values by category ID
+exports.findFeatureValuesByCategory = async function (req: Request, res: Response) {
+  try {
+    const categoryId = req.params.categoryId;
+    const { data, error } = await supabase
+      .from('feature_values')  // Assumes there's a table for feature values
+      .select("*")
+      .eq('category_id', categoryId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    res.send(data);
+  } catch (error: unknown) {
+    const err = error as Error;
+    res.status(500).send({ error: err.message });
+  }
+};
