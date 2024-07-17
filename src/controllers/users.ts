@@ -32,8 +32,8 @@ exports.addToLikes = function (req: Request, res: Response) {
 };
 
 // Función para añadir un producto al carrito de un usuario.
-exports.removeToLike = function (req: Request, res: Response) {
-  return Service.removeToLike(req, res);
+exports.removeToLikes = function (req: Request, res: Response) {
+  return Service.removeToLikes(req, res);
 };
 
 // Definición de la función para crear una nueva categoría.

@@ -1,6 +1,5 @@
-const express = require("express");
+import express from 'express';
 const Controller = require("../controllers/categories");
-const isAdmin = require("../middlewares/isAdmin"); // Importa tu middleware isAdmin
 const categories = express.Router();
 
 // Ruta GET para encontrar todas las categorías (acceso público)
@@ -10,15 +9,15 @@ categories.get("/", Controller.findAll);
 categories.get("/:categoryId", Controller.findById);
 
 // Ruta POST para crear una nueva categoría (requiere ser administrador)
-categories.post("/", isAdmin, Controller.create);
+categories.post("/", Controller.create);
 
 // Ruta POST para crear múltiples categorías (requiere ser administrador)
-categories.post("/all", isAdmin, Controller.createMultiple);
+categories.post("/all", Controller.createMultiple);
 
 // Ruta PUT/PATCH para actualizar una categoría por su ID (requiere ser administrador)
-categories.put("/:categoryId", isAdmin, Controller.update);
+categories.put("/:categoryId", Controller.update);
 
 // Ruta DELETE para eliminar una categoría por su ID (requiere ser administrador)
-categories.delete("/:categoryId", isAdmin, Controller.delete);
+categories.delete("/:categoryId", Controller.delete);
 
 module.exports = categories;

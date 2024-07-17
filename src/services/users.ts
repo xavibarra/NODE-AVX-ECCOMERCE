@@ -309,35 +309,4 @@ exports.emptyCart = async function (req: Request, res: Response) {
   }
 };
 
-// Middleware para verificar si el usuario es administrador
-export const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = req.user.id; // Suponiendo que tienes el ID del usuario en req.user.id
-
-    // Consultar la base de datos para obtener el perfil del usuario
-    const { data: user, error: userError } = await supabase
-      .from(USUARIOS_TABLE_NAME)
-      .select('admin')
-      .eq('id', userId)
-      .single();
-
-    if (userError) {
-      throw new Error(userError.message);
-    }
-
-    if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
-    }
-
-    // Verificar si el usuario es administrador
-    if (user.admin === true) {
-      next(); // Continuar con la solicitud si el usuario es administrador
-    } else {
-      res.status(403).json({ message: 'Unauthorized access' });
-    }
-  } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ error: err.message });
-  }
-};
 
