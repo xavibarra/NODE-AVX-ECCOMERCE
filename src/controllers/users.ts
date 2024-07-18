@@ -11,6 +11,21 @@ exports.getUserById = function (req: Request, res: Response) {
   return Service.getUserById(req, res);
 };
 
+exports.isAdmin = async function (req: Request, res: Response) {
+  const userId = req.query.userId;
+  if (!userId) {
+    return res.status(400).json({ isAdmin: false, message: "User ID is required" });
+  }
+
+  try {
+    const isAdmin = await Service.isAdmin(userId);
+    return res.json({ isAdmin });
+  } catch (error) {
+    console.error("Error checking admin status:", error);
+    return res.status(500).json({ isAdmin: false, message: "Internal server error" });
+  }
+};
+
 // Definición de la función para crear un nuevo usuario.
 exports.create = function (req: Request, res: Response) {
   return Service.create(req, res);

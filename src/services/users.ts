@@ -308,3 +308,18 @@ exports.emptyCart = async function (req: Request, res: Response) {
     res.status(500).send({ error: err.message });
   }
 };
+
+export const isAdmin = async (userId: string): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("admin")
+    .eq("id", userId)
+    .single();
+
+  if (error) {
+    console.error("Error checking admin status:", error);
+    return false;
+  }
+
+  return data?.admin || false;
+};

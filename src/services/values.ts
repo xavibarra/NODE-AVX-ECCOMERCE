@@ -8,7 +8,8 @@ const supabaseUrl: string = process.env.SUPABASE_URL || ""; // URL de tu base de
 const supabaseKey: string = process.env.SUPABASE_KEY || ""; // Token de autenticación de tu base de datos de Supabase
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const VALUES_TABLE_NAME: string = "featuresvalues";
+const VALUES_TABLE_NAME: string = "features_values";
+const FEATURES_TABLE_NAME: string = "features";
 
 // Función para encontrar todos los productos.
 exports.findAll = async function (res: Response) {
@@ -234,21 +235,21 @@ exports.getFeatureValuesByProductId = async function (productId: number) {
   return data;
 };
 
-// Fetch feature values by category ID
-exports.findFeatureValuesByCategory = async function (req: Request, res: Response) {
+// Fetch feature by category ID
+exports.findFeaturesByCategory = async function (req: Request, res: Response) {
   try {
     const categoryId = req.params.categoryId;
     const { data, error } = await supabase
-      .from('feature_values')  // Assumes there's a table for feature values
+      .from(FEATURES_TABLE_NAME)
       .select("*")
       .eq('category_id', categoryId);
 
     if (error) {
       throw new Error(error.message);
     }
-    res.send(data);
-  } catch (error: unknown) {
-    const err = error as Error;
-    res.status(500).send({ error: err.message });
+    res.json(data); // Envía los datos de características como respuesta
+  } catch (error) {
+    console.error("Error fetching feature values:", error);
+    res.status(500).json({ error: "Failed to fetch feature values" });
   }
 };
