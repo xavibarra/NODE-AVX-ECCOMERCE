@@ -10,4 +10,7 @@ reviews.get(
   ControllerReviews.findReviewsByProductId
 );
 
+// Actualizar los likes de una review por su ID
+reviews.put("/updateLikes/:id", ControllerReviews.updateLikes);
+
 module.exports = reviews;

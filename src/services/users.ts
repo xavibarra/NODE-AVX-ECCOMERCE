@@ -6,7 +6,7 @@ const supabaseUrl: string = process.env.SUPABASE_URL as string;
 const supabaseKey: string = process.env.SUPABASE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const USUARIOS_TABLE_NAME: string = "auth.users";
+const USUARIOS_TABLE_NAME: string = "profiles";
 
 // Función para encontrar todos los usuarios.
 exports.findAll = async function (req: Request, res: Response) {
