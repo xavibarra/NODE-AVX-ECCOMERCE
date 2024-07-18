@@ -21,6 +21,10 @@ exports.findByFeatureId = function (req: Request, res: Response) {
   return Service.findByFeatureId(req, res);
 };
 
+exports.findFeaturesByCategory = function (req: Request, res: Response) {
+  return Service.findFeaturesByCategory(req, res);
+};
+
 // Definición de la función para crear un nuevo producto.
 exports.create = function (req: Request, res: Response) {
   return Service.create(req, res);
@@ -87,7 +91,7 @@ exports.getFeatureValues = async (req: Request, res: Response) => {
 };
 
 
-exports.findFeatureValuesByCategory = async function (req: Request, res: Response) {
+/* exports.findFeatureValuesByCategory = async function (req: Request, res: Response) {
   const { categoryId } = req.params;
   try {
     const featureValues = await Service.getFeatureValuesByCategoryId(
@@ -98,4 +102,4 @@ exports.findFeatureValuesByCategory = async function (req: Request, res: Respons
     const err = error as Error;
     res.status(500).send({ error: err.message });
   }
-};
+}; */

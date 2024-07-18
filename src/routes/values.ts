@@ -3,6 +3,7 @@ const ControllerValues = require("../controllers/values");
 const values = require("express").Router();
 
 //--------------------------------- GET ------------------------------------------//
+values.get("/:categoryId", ControllerValues.findFeaturesByCategory);
 
 // Ruta para obtener todos los valores de featuresValues
 values.get("/", ControllerValues.findAll);
@@ -44,8 +45,6 @@ values.delete("/:valuesId", ControllerValues.delete);
 values.delete("/product/:productId", ControllerValues.deleteByProductId);
 
 //----------------------------- FEATURES/VALUES -----------------------------------//
-
-values.get("/values/category/:categoryId", ControllerValues.findFeatureValuesByCategory);
 
 module.exports = values;
 

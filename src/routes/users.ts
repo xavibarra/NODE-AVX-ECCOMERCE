@@ -11,6 +11,8 @@ users.get("/getById/:userId", ControllerUsers.getUserById);
 // Ruta GET para verificar si un usuario ha dado like a un producto (requiere ser administrador)
 users.get("/check-like", ControllerUsers.checkLike);
 
+users.get("/is-admin", ControllerUsers.isAdmin);
+
 // Ruta POST para crear un nuevo usuario (acceso público)
 users.post("/", ControllerUsers.create);
 
@@ -25,7 +27,5 @@ users.delete("/remove-like", ControllerUsers.removeToLikes);
 
 // Ruta POST para vaciar el carrito de un usuario (acceso público)
 users.post("/empty-cart/:userId", ControllerUsers.emptyCart);
-
-
 
 module.exports = users;
