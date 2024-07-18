@@ -87,3 +87,57 @@ exports.createReview = async function (req: Request, res: Response) {
     res.status(500).send({ error: err.message });
   }
 };
+
+// Función para actualizar los likes de una review por su id
+export async function updateLikes(
+  reviewId: number,
+  incrementBy: number | undefined,
+  setLikesTo: number | undefined
+): Promise<{ message: string; review: any } | { error: string }> {
+  try {
+    // Validar que reviewId esté definido y no sea undefined
+    if (isNaN(reviewId)) {
+      throw new Error("Review ID must be a valid number");
+    }
+
+    // Obtener la review actual
+    const { data: currentReview, error: fetchError } = await supabase
+      .from(REVIEWS_TABLE_NAME)
+      .select("likes")
+      .eq("id", reviewId)
+      .single();
+
+    if (fetchError) {
+      throw new Error(fetchError.message);
+    }
+
+    if (!currentReview) {
+      return { error: `No review found for ID ${reviewId}` };
+    }
+
+    let newLikes;
+
+    // Determinar el nuevo valor de likes
+    if (incrementBy !== undefined) {
+      newLikes = currentReview.likes + incrementBy;
+    } else if (setLikesTo !== undefined) {
+      newLikes = setLikesTo;
+    } else {
+      throw new Error("Either incrementBy or setLikesTo must be provided");
+    }
+
+    // Actualizar el valor de likes
+    const { data, error } = await supabase
+      .from(REVIEWS_TABLE_NAME)
+      .update({ likes: newLikes })
+      .eq("id", reviewId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { message: "Likes updated successfully", review: data };
+  } catch (error) {
+    throw new Error("Either incrementBy or setLikesTo must be provided");
+  }
+}
