@@ -63,22 +63,24 @@ export async function findReviewsByProductId(req: Request, res: Response) {
 // Función para crear una nueva reseña
 exports.createReview = async function (req: Request, res: Response) {
   try {
-    const { id_product, rating, comment } = req.body;
+    const { product_id, user_id, rating, review, likes } = req.body;
 
     // Validar los datos de entrada
-    if (!id_product || !rating || !comment) {
-      throw new Error("id_product, rating, and comment are required");
+    if (!product_id || !user_id || !rating || !review || likes === undefined) {
+      throw new Error(
+        "id_product, user_id, rating, comment, and likes are required"
+      );
     }
 
     // Insertar la nueva reseña en la base de datos
     const { data, error } = await supabase
       .from(REVIEWS_TABLE_NAME)
-      .insert([{ id_product, rating, comment }]);
+      .insert([{ product_id, user_id, rating, review, likes }]);
+    console.log(data);
 
     if (error) {
       throw new Error(error.message);
     }
-
     res
       .status(201)
       .send({ message: "Review created successfully", review: data });

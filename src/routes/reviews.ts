@@ -10,6 +10,9 @@ reviews.get(
   ControllerReviews.findReviewsByProductId
 );
 
+// Crear una nueva review
+reviews.post("/createReview", ControllerReviews.createReview);
+
 // Actualizar los likes de una review por su ID
 reviews.put("/updateLikes/:id", ControllerReviews.updateLikes);
 

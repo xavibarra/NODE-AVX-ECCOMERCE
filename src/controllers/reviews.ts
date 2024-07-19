@@ -11,6 +11,11 @@ exports.findReviewsByProductId = function (req: Request, res: Response) {
   return ServiceReviews.findReviewsByProductId(req, res);
 };
 
+// Definición de la función para crear una nueva review.
+exports.createReview = function (req: Request, res: Response) {
+  return ServiceReviews.createReview(req, res);
+};
+
 // Función para actualizar los likes de una review por su ID.
 export async function updateLikes(req: Request, res: Response) {
   try {
